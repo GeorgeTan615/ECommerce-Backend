@@ -1,0 +1,10 @@
+com\george\productservice\ProductServiceApplication.class
+com\george\productservice\repository\ProductRepository.class
+com\george\productservice\dto\ProductRequest$ProductRequestBuilder.class
+com\george\productservice\controller\ProductController.class
+com\george\productservice\model\Product$ProductBuilder.class
+com\george\productservice\model\Product.class
+com\george\productservice\service\ProductService.class
+com\george\productservice\dto\ProductResponse.class
+com\george\productservice\dto\ProductResponse$ProductResponseBuilder.class
+com\george\productservice\dto\ProductRequest.class

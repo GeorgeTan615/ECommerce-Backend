@@ -1,0 +1,16 @@
+com\george\orderservice\dto\OrderLineItemDto.class
+com\george\orderservice\dto\OrderRequest.class
+com\george\orderservice\dto\InventoryResponse$InventoryResponseBuilder.class
+com\george\orderservice\service\OrderService.class
+com\george\orderservice\dto\OrderLineItemDto$OrderLineItemDtoBuilder.class
+com\george\orderservice\OrderServiceApplication.class
+com\george\orderservice\dto\InventoryResponse.class
+com\george\orderservice\dto\OrderRequest$OrderRequestBuilder.class
+com\george\orderservice\model\OrderLineItem.class
+com\george\orderservice\dto\OrderResponse.class
+com\george\orderservice\config\WebClientConfig.class
+com\george\orderservice\dto\OrderResponse$OrderResponseBuilder.class
+com\george\orderservice\controller\OrderController.class
+com\george\orderservice\model\Order.class
+com\george\orderservice\model\OrderLineItem$OrderLineItemBuilder.class
+com\george\orderservice\repository\OrderRepository.class

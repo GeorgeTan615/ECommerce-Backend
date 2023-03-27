@@ -1,0 +1,8 @@
+com\george\inventoryservice\dto\InventoryResponse.class
+com\george\inventoryservice\model\Inventory.class
+com\george\inventoryservice\model\Inventory$InventoryBuilder.class
+com\george\inventoryservice\dto\InventoryResponse$InventoryResponseBuilder.class
+com\george\inventoryservice\controller\InventoryController.class
+com\george\inventoryservice\repository\InventoryRepository.class
+com\george\inventoryservice\InventoryServiceApplication.class
+com\george\inventoryservice\service\InventoryService.class

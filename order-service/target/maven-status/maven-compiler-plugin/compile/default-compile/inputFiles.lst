@@ -1,0 +1,11 @@
+C:\Users\georg\Tech\ECommerce\ecommerce-microservices-new\order-service\src\main\java\com\george\orderservice\dto\OrderRequest.java
+C:\Users\georg\Tech\ECommerce\ecommerce-microservices-new\order-service\src\main\java\com\george\orderservice\OrderServiceApplication.java
+C:\Users\georg\Tech\ECommerce\ecommerce-microservices-new\order-service\src\main\java\com\george\orderservice\controller\OrderController.java
+C:\Users\georg\Tech\ECommerce\ecommerce-microservices-new\order-service\src\main\java\com\george\orderservice\service\OrderService.java
+C:\Users\georg\Tech\ECommerce\ecommerce-microservices-new\order-service\src\main\java\com\george\orderservice\model\Order.java
+C:\Users\georg\Tech\ECommerce\ecommerce-microservices-new\order-service\src\main\java\com\george\orderservice\dto\OrderLineItemDto.java
+C:\Users\georg\Tech\ECommerce\ecommerce-microservices-new\order-service\src\main\java\com\george\orderservice\config\WebClientConfig.java
+C:\Users\georg\Tech\ECommerce\ecommerce-microservices-new\order-service\src\main\java\com\george\orderservice\repository\OrderRepository.java
+C:\Users\georg\Tech\ECommerce\ecommerce-microservices-new\order-service\src\main\java\com\george\orderservice\model\OrderLineItem.java
+C:\Users\georg\Tech\ECommerce\ecommerce-microservices-new\order-service\src\main\java\com\george\orderservice\dto\InventoryResponse.java
+C:\Users\georg\Tech\ECommerce\ecommerce-microservices-new\order-service\src\main\java\com\george\orderservice\dto\OrderResponse.java
