@@ -4,12 +4,16 @@ import com.george.orderservice.dto.OrderRequest;
 import com.george.orderservice.dto.OrderResponse;
 import com.george.orderservice.model.Order;
 import com.george.orderservice.service.OrderService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,10 +24,16 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public String createOrder(@RequestBody OrderRequest orderRequest){
-        orderService.placeOrder(orderRequest);
-        return "Order placed successfully";
+    @CircuitBreaker(name="inventory",fallbackMethod = "fallbackMethod")
+    @TimeLimiter(name="inventory")
+    @Retry(name="inventory")
+    public CompletableFuture<String> createOrder(@RequestBody OrderRequest orderRequest){
+        return CompletableFuture.supplyAsync(()->orderService.placeOrder(orderRequest));
 
+    }
+
+    public CompletableFuture<String> fallbackMethod(OrderRequest orderRequest, RuntimeException runtimeException){
+        return CompletableFuture.supplyAsync(()->"Oops! Something went wrong, please order after some time!");
     }
 
     @GetMapping
