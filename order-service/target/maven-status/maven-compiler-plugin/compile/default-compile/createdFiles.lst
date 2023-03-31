@@ -12,5 +12,6 @@ com\george\orderservice\config\WebClientConfig.class
 com\george\orderservice\dto\OrderResponse$OrderResponseBuilder.class
 com\george\orderservice\controller\OrderController.class
 com\george\orderservice\model\Order.class
+com\george\orderservice\event\OrderPlacedEvent.class
 com\george\orderservice\model\OrderLineItem$OrderLineItemBuilder.class
 com\george\orderservice\repository\OrderRepository.class
