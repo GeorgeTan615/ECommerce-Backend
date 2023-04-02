@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface InventoryRepository extends JpaRepository<Inventory,Long> {
-    Optional<Inventory> findBySkuCode(String skuCode);
+public interface InventoryRepository extends JpaRepository<Inventory,String> {
+    Optional<Inventory> findByProductId(String productId);
 
-    List<Inventory> findBySkuCodeIn(List<String> skuCode);
+    List<Inventory> findByProductIdIn(List<String> productId);
 }

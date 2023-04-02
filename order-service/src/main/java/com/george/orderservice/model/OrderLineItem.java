@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name="t_order_line_items")
+@Table(name="OrderLineItem")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

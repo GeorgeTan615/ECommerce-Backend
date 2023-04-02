@@ -2,6 +2,7 @@ package com.george.inventoryservice.service;
 
 
 import com.george.inventoryservice.dto.InventoryResponse;
+import com.george.inventoryservice.model.Inventory;
 import com.george.inventoryservice.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -20,18 +21,24 @@ public class InventoryService {
 
     @Transactional(readOnly = true)
     @SneakyThrows
-    public List<InventoryResponse> isInStock(List<String> skuCode){
+    public List<InventoryResponse> isInStock(List<String> productId){
 //        log.info("Wait started");
 //        Thread.sleep(10000);
 //        log.info("Wait ended");
         return inventoryRepository
-                .findBySkuCodeIn(skuCode)
+                .findByProductIdIn(productId)
                 .stream()
                 .map(inventory ->
                         InventoryResponse.builder()
-                        .skuCode(inventory.getSkuCode())
+                        .productId(inventory.getProductId())
                         .isInStock(inventory.getQuantity()>0)
                         .build()
                 ).toList();
+    }
+
+    public void createStock(Inventory inventory){
+        inventoryRepository.save(inventory);
+        log.info("Inventory created");
+
     }
 }
