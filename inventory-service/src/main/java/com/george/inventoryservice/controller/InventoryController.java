@@ -2,6 +2,7 @@ package com.george.inventoryservice.controller;
 
 import com.george.inventoryservice.dto.InventoryRequest;
 import com.george.inventoryservice.dto.InventoryResponse;
+import com.george.inventoryservice.exception.ProductNotFoundException;
 import com.george.inventoryservice.model.Inventory;
 import com.george.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,14 @@ public class InventoryController {
                 .quantity(inventoryRequest.getQuantity())
                 .build();
         inventoryService.createStock(inventory);
+
+    }
+
+
+    @PostMapping("/{productId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void updateStock(@PathVariable String productId, @RequestBody int newQuantity) throws ProductNotFoundException {
+        inventoryService.updateStock(productId,newQuantity);
 
     }
 }

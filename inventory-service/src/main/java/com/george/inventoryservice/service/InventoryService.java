@@ -2,6 +2,7 @@ package com.george.inventoryservice.service;
 
 
 import com.george.inventoryservice.dto.InventoryResponse;
+import com.george.inventoryservice.exception.ProductNotFoundException;
 import com.george.inventoryservice.model.Inventory;
 import com.george.inventoryservice.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +37,19 @@ public class InventoryService {
                 ).toList();
     }
 
+    @Transactional
     public void createStock(Inventory inventory){
         inventoryRepository.save(inventory);
         log.info("Inventory created");
+
+    }
+
+    @Transactional
+    public void updateStock(String productId,int newQuantity) throws ProductNotFoundException {
+        Inventory inventory = inventoryRepository.findByProductId(productId)
+                .orElseThrow(()->new ProductNotFoundException(productId));
+        inventory.setQuantity(newQuantity);
+        inventoryRepository.save(inventory);
 
     }
 }
