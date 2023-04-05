@@ -1,5 +1,7 @@
 package com.george.orderservice.dto;
 
+import com.george.orderservice.model.Cart;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +14,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderLineItemDto {
-    private String skuCode;
+    private Long id;
+    private String productId;
     private BigDecimal price;
     private Integer quantity;
 }

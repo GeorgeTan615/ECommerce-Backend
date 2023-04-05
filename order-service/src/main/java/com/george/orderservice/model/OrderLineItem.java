@@ -18,7 +18,11 @@ public class OrderLineItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String skuCode;
+    private String productId;
     private BigDecimal price;
     private Integer quantity;
+
+    @ManyToOne
+    @JoinColumn(name="cart_id")
+    private Cart cart;
 }

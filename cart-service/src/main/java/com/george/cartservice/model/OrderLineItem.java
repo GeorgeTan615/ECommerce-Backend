@@ -21,4 +21,8 @@ public class OrderLineItem {
     private String productId;
     private BigDecimal price;
     private Integer quantity;
+
+    @ManyToOne
+    @JoinColumn(name="cart_id")
+    private Cart cart;
 }

@@ -1,7 +1,5 @@
 package com.george.orderservice.dto;
 
-import com.george.orderservice.model.OrderLineItem;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

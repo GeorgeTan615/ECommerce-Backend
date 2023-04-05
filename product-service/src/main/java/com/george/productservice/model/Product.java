@@ -19,6 +19,8 @@ public class Product {
     private String id;
     private String name;
     private String description;
+
+    // Should have a class of price to modify all instances of price of an product
     private BigDecimal price;
 }
 
