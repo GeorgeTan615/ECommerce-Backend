@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -22,19 +23,19 @@ public class InventoryService {
 
     @Transactional(readOnly = true)
     @SneakyThrows
-    public List<InventoryResponse> isInStock(List<String> productId){
+    public List<Inventory> getProductsInventory(List<String> productIds){
 //        log.info("Wait started");
 //        Thread.sleep(10000);
 //        log.info("Wait ended");
         return inventoryRepository
-                .findByProductIdIn(productId)
-                .stream()
-                .map(inventory ->
-                        InventoryResponse.builder()
-                        .productId(inventory.getProductId())
-                        .isInStock(inventory.getQuantity()>0)
-                        .build()
-                ).toList();
+                .findByProductIdIn(productIds);
+//                .stream()
+//                .map(inventory ->
+//                        InventoryResponse.builder()
+//                        .productId(inventory.getProductId())
+//                        .quantity(inventory.getQuantity())
+//                        .build()
+//                ).toList();
     }
 
     @Transactional
@@ -50,6 +51,20 @@ public class InventoryService {
                 .orElseThrow(()->new ProductNotFoundException(productId));
         inventory.setQuantity(newQuantity);
         inventoryRepository.save(inventory);
+
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
+    public String updateStocks(List<Inventory> newInventory) throws Exception {
+        try{
+            for (Inventory inventory: newInventory){
+                inventoryRepository.save(inventory);
+            }
+            return "Update success";
+        }
+        catch (Exception e){
+            throw new Exception("Update new inventory failed");
+        }
 
     }
 }

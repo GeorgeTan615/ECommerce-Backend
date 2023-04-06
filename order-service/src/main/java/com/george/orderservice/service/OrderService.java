@@ -64,6 +64,9 @@ public class OrderService {
         try{
             Cart cart = cartRepository.findByUserId(userId).orElseThrow(()->new CartNotFoundException(userId));
             CartDto cartDto = mapToCartDto(cart);
+            if (cartDto.getOrderLineItemDtoList().size()==0){
+                throw new Exception("Empty cart can't be checked out");
+            }
 ////        Order order = new Order();
 ////        order.setOrderNumber(UUID.randomUUID().toString());
 //

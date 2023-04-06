@@ -7,6 +7,8 @@ import com.george.inventoryservice.model.Inventory;
 import com.george.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,10 +22,11 @@ public class InventoryController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<InventoryResponse> isInStock(@RequestParam List<String> skuCode){
-        return inventoryService.isInStock(skuCode);
+    public List<Inventory> getProductsInventory(@RequestParam List<String> productIds){
+        return inventoryService.getProductsInventory(productIds);
 
     }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -37,10 +40,18 @@ public class InventoryController {
     }
 
 
-    @PostMapping("/{productId}")
+    @PatchMapping("/{productId}")
     @ResponseStatus(HttpStatus.CREATED)
     public void updateStock(@PathVariable String productId, @RequestBody int newQuantity) throws ProductNotFoundException {
         inventoryService.updateStock(productId,newQuantity);
+
+    }
+
+    @PatchMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
+    public String updateStocks(@RequestBody List<Inventory> newInventory) throws Exception {
+        return inventoryService.updateStocks(newInventory);
 
     }
 }
