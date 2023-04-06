@@ -26,7 +26,7 @@ public class CartController {
         return cartService.getCart(userId);
     }
 
-    // Add a new item to cart or create new cart
+    // Add a new item to cart
     @PostMapping("/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
     public String addCartItem(@PathVariable String userId,

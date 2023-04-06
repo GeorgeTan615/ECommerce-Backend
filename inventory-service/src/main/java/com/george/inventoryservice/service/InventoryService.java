@@ -54,16 +54,17 @@ public class InventoryService {
 
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
-    public String updateStocks(List<Inventory> newInventory) throws Exception {
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = RuntimeException.class)
+    public String updateStocks(List<Inventory> newInventory) throws RuntimeException {
         try{
             for (Inventory inventory: newInventory){
                 inventoryRepository.save(inventory);
             }
+            log.info("Inventory update success");
             return "Update success";
         }
         catch (Exception e){
-            throw new Exception("Update new inventory failed");
+            throw new RuntimeException("Update new inventory failed");
         }
 
     }

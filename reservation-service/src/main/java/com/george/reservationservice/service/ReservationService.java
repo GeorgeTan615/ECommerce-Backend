@@ -4,6 +4,7 @@ import com.george.reservationservice.dto.ReservationDto;
 import com.george.reservationservice.exception.CartNotFoundException;
 import com.george.reservationservice.model.Cart;
 import com.george.reservationservice.repository.CartRepository;
+import com.george.reservationservice.repository.InventoryRepository;
 import com.george.reservationservice.repository.ReservationRepository;
 import com.george.reservationservice.dto.CartDto;
 import com.george.reservationservice.dto.OrderLineItemDto;
@@ -29,11 +30,12 @@ import java.util.UUID;
 public class ReservationService {
     private final WebClient.Builder webClientBuilder;
     private final ReservationRepository reservationRepository;
+    private final InventoryRepository inventoryRepository;
     private final CartRepository cartRepository;
     private final KafkaTemplate<String,ReservationDto> kafkaTemplate;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
-    public void validateAndCreateReservation(CartDto cartDto) throws Exception {
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = RuntimeException.class)
+    public void validateAndCreateReservation(CartDto cartDto) throws RuntimeException {
         // Create a hashmap based on items in cartDto
         HashMap<String,Integer> cartProductsQuantity = new HashMap<String,Integer>();
         List<String> productIds = cartDto.getOrderLineItemDtoList()
@@ -54,34 +56,53 @@ public class ReservationService {
                 .block();
 
         if (productsInventory == null || productsInventory.length == 0){
-            throw new Exception("Empty cart can't be checked out");
+            throw new RuntimeException("Empty cart can't be checked out");
         }
         if (cartProductsQuantity.size() != productsInventory.length){
-            throw new Exception("Inventory for some products does not exist");
+            throw new RuntimeException("Inventory for some products does not exist");
         }
         // Loop through the products obtained from inventory service and decrement the quantity accordingly
         for (Inventory inventory:productsInventory){
             int newQuantity = inventory.getQuantity() - cartProductsQuantity.get(inventory.getProductId());
             if (newQuantity<0){
-                throw new Exception("Product "+ inventory.getProductId() + " does not have enough stock for user");
+                throw new RuntimeException("Product "+ inventory.getProductId() + " does not have enough stock for user");
             }
             else{
                 inventory.setQuantity(newQuantity);
             }
         }
         // send it back to inventory service to update the stock
-        // Exception might be raised in the process which will cause rollback
-        String response = webClientBuilder.build()
-                .patch()
-                .uri("http://inventory-service/api/inventories")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(productsInventory)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+        // If want to rollback updates done using HTTP request, need more configurations
+
+//        String response = webClientBuilder.build()
+//                .patch()
+//                .uri("http://inventory-service/api/inventories")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .bodyValue(productsInventory)
+//                .retrieve()
+//                .bodyToMono(String.class)
+//                .block();
+
+//        if (response != null){
+//            throw new RuntimeException("test if rollback works");
+//        }
+
+        try{
+            for (Inventory productInventory: productsInventory){
+                inventoryRepository.save(productInventory);
+            }
+        }
+        catch (Exception e){
+            throw new RuntimeException("Update new inventory failed");
+        }
+        log.info("Inventory update success");
 
 
-        Cart cart = cartRepository.findByUserId(cartDto.getUserId()).orElseThrow(()->new CartNotFoundException(cartDto.getUserId()));
+        Cart cart = cartRepository.findByUserId(cartDto.getUserId()).orElseThrow(()->new RuntimeException("Cart not found"));
+//        if (!UUID.randomUUID().toString().equals("hello")){
+//            throw new RuntimeException("test if rollback works");
+//
+//        }
         Reservation reservation = Reservation.builder()
                 .id(UUID.randomUUID().toString())
                 .userId(cartDto.getUserId())
@@ -98,5 +119,11 @@ public class ReservationService {
 
         reservationRepository.save(reservation);
         kafkaTemplate.send("ordersReservedTopic",reservationDto);
+    }
+
+    public void removeStaleReservations() {
+        LocalDateTime cutOffTime = LocalDateTime.now().minusMinutes(10);
+        reservationRepository.deleteByExpirationDateTimeBefore(cutOffTime);
+        log.info("Removed stale reservations if any...");
     }
 }
