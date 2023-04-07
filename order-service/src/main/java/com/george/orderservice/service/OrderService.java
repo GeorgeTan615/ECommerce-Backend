@@ -1,10 +1,6 @@
 package com.george.orderservice.service;
 
-import com.george.orderservice.dto.CartDto;
-import com.george.orderservice.dto.InventoryResponse;
-import com.george.orderservice.dto.OrderLineItemDto;
-import com.george.orderservice.dto.OrderResponse;
-import com.george.orderservice.event.OrderPlacedEvent;
+import com.george.orderservice.dto.*;
 import com.george.orderservice.exception.CartNotFoundException;
 import com.george.orderservice.model.Cart;
 import com.george.orderservice.model.Order;
@@ -18,9 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Arrays;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +26,8 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
-    private final KafkaTemplate<String,CartDto> kafkaTemplate;
+    private final KafkaTemplate<String,CartDto> cartDtoKafkaTemplate;
+    private final KafkaTemplate<String,StripeForm> stripeFormKafkaTemplate;
 
     public List<OrderResponse> getAllOrders(){
         List<Order> orders = orderRepository.findAll();
@@ -90,7 +86,7 @@ public class OrderService {
 ////            boolean allProductsInStock = Arrays.stream(inventoryResponses).allMatch(InventoryResponse::isInStock);
 ////            if (allProductsInStock){
 ////                orderRepository.save(order);
-            kafkaTemplate.send("ordersPlacedTopic",cartDto);
+            cartDtoKafkaTemplate.send("ordersPlacedTopic",cartDto);
 //            log.info(cart.getUserId());
             log.info("Message sent to kafka topic");
             return "Order placed successfully!";
@@ -120,6 +116,20 @@ public class OrderService {
         List<OrderLineItemDto> orderLineItemDtoList = cart.getOrderLineItemList().stream().map(this::mapToOrderLineItemDto).toList();
         cartDto.setOrderLineItemDtoList(orderLineItemDtoList);
         return cartDto;
+    }
+
+    private void getAndSendStripeForm(ReservationDto reservationDto){
+        log.info("Handling reservation {} which ends at {}",
+                reservationDto.getId(),
+                reservationDto.getExpirationDateTime()
+        );
+        StripeForm stripeForm = StripeForm.builder()
+                .cardName("George Tan Juan Sheng")
+                .cardNumber("123456789")
+                .currency("USD")
+                .paymentAmount(BigDecimal.valueOf(1000))
+                .build();
+        stripeFormKafkaTemplate.send("paymentsRead",stripeForm);
     }
 
 }

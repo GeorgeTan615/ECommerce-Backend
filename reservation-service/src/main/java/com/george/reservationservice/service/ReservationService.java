@@ -10,6 +10,7 @@ import com.george.reservationservice.dto.CartDto;
 import com.george.reservationservice.dto.OrderLineItemDto;
 import com.george.reservationservice.model.Inventory;
 import com.george.reservationservice.model.Reservation;
+import jakarta.persistence.LockTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -34,7 +35,12 @@ public class ReservationService {
     private final CartRepository cartRepository;
     private final KafkaTemplate<String,ReservationDto> kafkaTemplate;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = RuntimeException.class)
+    // Using read commited instead of default repeatable read
+    // Because consistent reading is not valuable to us
+    // Recent updates are more valuable to us since we are handling inventory
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {
+                                                            RuntimeException.class,
+                                                            LockTimeoutException.class})
     public void validateAndCreateReservation(CartDto cartDto) throws RuntimeException {
         // Create a hashmap based on items in cartDto
         HashMap<String,Integer> cartProductsQuantity = new HashMap<String,Integer>();
@@ -46,19 +52,21 @@ public class ReservationService {
             cartProductsQuantity.put(orderLineItemDto.getProductId(), orderLineItemDto.getQuantity());
         }
         // send request to get all related products from inventory service
-        Inventory[] productsInventory = webClientBuilder.build()
-                .get()
-                .uri("http://inventory-service/api/inventories",
-                        uriBuilder -> uriBuilder.queryParam("productIds",productIds).build()
-                )
-                .retrieve()
-                .bodyToMono(Inventory[].class)
-                .block();
+        // This is skipped for now as we want to maintain in the same Transaction
+//        Inventory[] productsInventory = webClientBuilder.build()
+//                .get()
+//                .uri("http://inventory-service/api/inventories",
+//                        uriBuilder -> uriBuilder.queryParam("productIds",productIds).build()
+//                )
+//                .retrieve()
+//                .bodyToMono(Inventory[].class)
+//                .block();
+        List<Inventory> productsInventory = inventoryRepository.findByProductIdIn(productIds);
 
-        if (productsInventory == null || productsInventory.length == 0){
+        if (productsInventory == null || productsInventory.size() == 0){
             throw new RuntimeException("Empty cart can't be checked out");
         }
-        if (cartProductsQuantity.size() != productsInventory.length){
+        if (cartProductsQuantity.size() != productsInventory.size()){
             throw new RuntimeException("Inventory for some products does not exist");
         }
         // Loop through the products obtained from inventory service and decrement the quantity accordingly
@@ -82,7 +90,7 @@ public class ReservationService {
 //                .retrieve()
 //                .bodyToMono(String.class)
 //                .block();
-
+//
 //        if (response != null){
 //            throw new RuntimeException("test if rollback works");
 //        }

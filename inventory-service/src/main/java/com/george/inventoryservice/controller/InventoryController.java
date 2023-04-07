@@ -49,7 +49,7 @@ public class InventoryController {
 
     @PatchMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public String updateStocks(@RequestBody List<Inventory> newInventory) throws Exception {
         return inventoryService.updateStocks(newInventory);
 

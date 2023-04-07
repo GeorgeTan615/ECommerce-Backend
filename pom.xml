@@ -24,6 +24,7 @@
         <module>notification-service</module>
         <module>cart-service</module>
         <module>reservation-service</module>
+        <module>payments-service</module>
     </modules>
 
     <properties>

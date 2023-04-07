@@ -54,7 +54,7 @@ public class InventoryService {
 
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = RuntimeException.class)
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public String updateStocks(List<Inventory> newInventory) throws RuntimeException {
         try{
             for (Inventory inventory: newInventory){
