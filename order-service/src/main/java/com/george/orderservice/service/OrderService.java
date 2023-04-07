@@ -102,6 +102,19 @@ public class OrderService {
 
 
     }
+    public void getAndSendStripeForm(ReservationDto reservationDto){
+        log.info("Handling reservation {} which ends at {}",
+                reservationDto.getId(),
+                reservationDto.getExpirationDateTime()
+        );
+        StripeForm stripeForm = StripeForm.builder()
+                .cardName("George Tan Juan Sheng")
+                .cardNumber("123456789")
+                .currency("USD")
+                .paymentAmount(BigDecimal.valueOf(1000))
+                .build();
+        stripeFormKafkaTemplate.send("paymentsReadyTopic",stripeForm);
+    }
 
     private OrderLineItem mapToOrderLineItem(OrderLineItemDto orderLineItemDto) {
         return OrderLineItem.builder()
@@ -118,18 +131,6 @@ public class OrderService {
         return cartDto;
     }
 
-    private void getAndSendStripeForm(ReservationDto reservationDto){
-        log.info("Handling reservation {} which ends at {}",
-                reservationDto.getId(),
-                reservationDto.getExpirationDateTime()
-        );
-        StripeForm stripeForm = StripeForm.builder()
-                .cardName("George Tan Juan Sheng")
-                .cardNumber("123456789")
-                .currency("USD")
-                .paymentAmount(BigDecimal.valueOf(1000))
-                .build();
-        stripeFormKafkaTemplate.send("paymentsRead",stripeForm);
-    }
+
 
 }

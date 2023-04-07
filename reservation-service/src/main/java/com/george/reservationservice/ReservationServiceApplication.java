@@ -1,6 +1,7 @@
 package com.george.reservationservice;
 
 import com.george.reservationservice.dto.CartDto;
+import com.george.reservationservice.dto.StripeForm;
 import com.george.reservationservice.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,5 +43,11 @@ public class ReservationServiceApplication {
     @Transactional
     public void removeStaleReservations(){
         reservationService.removeStaleReservations();
+    }
+
+    @KafkaListener(topics = "paymentsCompletedTopic")
+    public void removePaidReservations(StripeForm stripeForm){
+        reservationService.removePaidReservations(stripeForm);
+
     }
 }

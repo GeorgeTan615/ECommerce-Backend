@@ -1,6 +1,7 @@
 package com.george.reservationservice.service;
 
 import com.george.reservationservice.dto.ReservationDto;
+import com.george.reservationservice.dto.StripeForm;
 import com.george.reservationservice.exception.CartNotFoundException;
 import com.george.reservationservice.model.Cart;
 import com.george.reservationservice.repository.CartRepository;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -129,9 +131,39 @@ public class ReservationService {
         kafkaTemplate.send("ordersReservedTopic",reservationDto);
     }
 
+    @Transactional
     public void removeStaleReservations() {
-        LocalDateTime cutOffTime = LocalDateTime.now().minusMinutes(10);
-        reservationRepository.deleteByExpirationDateTimeBefore(cutOffTime);
+//        LocalDateTime cutOffTime = LocalDateTime.now().minusMinutes(10);
+        List<Reservation> staleReservations = reservationRepository.findAllByExpirationDateTimeBefore(LocalDateTime.now());
+
+        // Collect the quantity to restore back for each product
+        HashMap<String,Integer> productsRestoreQuantity = new HashMap<>();
+
+        staleReservations.forEach(staleReservation ->
+                staleReservation.getCart()
+                        .getOrderLineItemList()
+                        .forEach(orderLineItem -> {
+                            String productId = orderLineItem.getProductId();
+                            Integer initialQuantity = productsRestoreQuantity.get(productId) != null
+                                                    ? productsRestoreQuantity.get(productId) : 0;
+                            productsRestoreQuantity.put(productId,initialQuantity+ orderLineItem.getQuantity());
+                                }
+                        ));
+        List<String> productIds = new ArrayList<String>(productsRestoreQuantity.keySet());
+
+        List<Inventory> productsInventory = inventoryRepository.findByProductIdIn(productIds);
+
+        productsInventory.forEach(product ->
+                product.setQuantity(product.getQuantity() +
+                        productsRestoreQuantity.get(product.getProductId()))
+        );
+
+        inventoryRepository.saveAll(productsInventory);
+        reservationRepository.deleteAll(staleReservations);
         log.info("Removed stale reservations if any...");
+    }
+
+    public void removePaidReservations(StripeForm stripeForm){
+        reservationRepository.deleteById(stripeForm.getReservationDto().getId());
     }
 }
