@@ -161,6 +161,7 @@ public class ReservationService {
         inventoryRepository.saveAll(productsInventory);
         reservationRepository.deleteAll(staleReservations);
         log.info("Removed stale reservations if any...");
+
     }
 
     public void removePaidReservations(StripeForm stripeForm){

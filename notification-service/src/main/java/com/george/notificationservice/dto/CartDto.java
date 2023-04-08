@@ -1,4 +1,4 @@
-package com.notificationservice.dto;
+package com.george.notificationservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

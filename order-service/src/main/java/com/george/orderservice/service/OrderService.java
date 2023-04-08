@@ -112,6 +112,7 @@ public class OrderService {
                 .cardNumber("123456789")
                 .currency("USD")
                 .paymentAmount(BigDecimal.valueOf(1000))
+                .reservationDto(reservationDto)
                 .build();
         stripeFormKafkaTemplate.send("paymentsReadyTopic",stripeForm);
     }

@@ -10,10 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ReservationRepository extends JpaRepository<Reservation, String> {
+public interface ReservationRepository extends JpaRepository<Reservation,String> {
     List<Reservation> findAllByExpirationDateTimeBefore(LocalDateTime localDateTime);
-
-    // Delete all at once, JPA will do batch delete which is faster than delete one by one
-    void deleteAll(List<Reservation> reservations);
 
 }

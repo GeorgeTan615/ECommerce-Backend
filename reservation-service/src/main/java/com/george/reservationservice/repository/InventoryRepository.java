@@ -21,5 +21,4 @@ public interface InventoryRepository extends JpaRepository<Inventory,String> {
     @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value = "5000")})
     List<Inventory> findByProductIdIn(List<String> productId);
 
-    void saveAll(List<Inventory> inventories);
 }

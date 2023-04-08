@@ -1,6 +1,6 @@
-package com.notificationservice;
+package com.george.notificationservice;
 
-import com.notificationservice.dto.StripeForm;
+import com.george.notificationservice.dto.StripeForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,7 +29,7 @@ public class NotificationServiceApplication {
                                                     .map(orderLineItemDto ->
                                                             orderLineItemDto.getProductId() + ":"+orderLineItemDto.getQuantity())
                                                     .collect(Collectors.joining("\n"));
-        log.info("Payment completed for  - {}\n{}", userId, orderLineItemsInfo);
+        log.info("Payment completed for - {}\n{}", userId, orderLineItemsInfo);
     }
 
 }
