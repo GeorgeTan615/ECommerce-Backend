@@ -9,6 +9,4 @@ import java.util.Optional;
 
 @Repository
 public interface OrderLineItemRepository extends JpaRepository<OrderLineItem,Long> {
-//    @NonNull
-    Optional<OrderLineItem> findById(Long id);
 }

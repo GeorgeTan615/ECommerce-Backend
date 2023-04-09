@@ -100,9 +100,6 @@ public class ReservationService {
     //                .bodyToMono(String.class)
     //                .block();
     //
-    //        if (response != null){
-    //            throw new RuntimeException("test if rollback works");
-    //        }
 
             try{
                 inventoryRepository.saveAll(productsInventory);

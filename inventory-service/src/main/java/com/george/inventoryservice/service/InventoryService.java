@@ -24,18 +24,8 @@ public class InventoryService {
     @Transactional(readOnly = true)
     @SneakyThrows
     public List<Inventory> getProductsInventory(List<String> productIds){
-//        log.info("Wait started");
-//        Thread.sleep(10000);
-//        log.info("Wait ended");
         return inventoryRepository
                 .findByProductIdIn(productIds);
-//                .stream()
-//                .map(inventory ->
-//                        InventoryResponse.builder()
-//                        .productId(inventory.getProductId())
-//                        .quantity(inventory.getQuantity())
-//                        .build()
-//                ).toList();
     }
 
     @Transactional

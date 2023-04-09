@@ -119,7 +119,6 @@ public class CartService {
                     .orElseThrow(()->new CartNotFoundException(userId));
             OrderLineItem orderLineItem = orderLineItemRepository.findById(orderLineItemId)
                     .orElseThrow(()->new Exception("Order line item not found"));
-
             List<OrderLineItem> orderLineItemList = cart.getOrderLineItemList();
 
             orderLineItemList.removeIf(item -> item.equals(orderLineItem));
@@ -138,7 +137,6 @@ public class CartService {
 
     public String checkOut(String userId) {
         try{
-//            Cart cart = cartRepository.findByUserId(userId).orElseThrow(()->new CartNotFoundException(userId));
             webClientBuilder.build()
                     .post()
                     .uri("http://order-service/api/orders")
