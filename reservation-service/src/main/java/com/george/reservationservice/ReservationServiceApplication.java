@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Isolation;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @EnableDiscoveryClient
 @RequiredArgsConstructor
 @EnableScheduling
+@EnableRetry
 @Slf4j
 public class ReservationServiceApplication {
     private final ReservationService reservationService;
