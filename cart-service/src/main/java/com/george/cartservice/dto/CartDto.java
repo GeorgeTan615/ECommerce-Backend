@@ -1,18 +1,18 @@
-package com.george.orderservice.dto;
+package com.george.cartservice.dto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderLineItemDto {
+public class CartDto {
     private Long id;
-    private String productId;
-    private BigDecimal price;
-    private Integer quantity;
+    private String userId;
+    private List<OrderLineItemDto> orderLineItemDtoList;
 }

@@ -37,7 +37,12 @@ import java.util.concurrent.locks.Lock;
 public class ReservationService {
     private final WebClient.Builder webClientBuilder;
     private final ReservationRepository reservationRepository;
+
+    // Can make calls to inventory service instead, but need to do
+    // extra configurations to make sure it is within the same transaction
     private final InventoryRepository inventoryRepository;
+    // Can make calls to cart service instead, but need to do
+    // extra configurations to make sure it is within the same transaction
     private final CartRepository cartRepository;
     private final KafkaTemplate<String,ReservationDto> kafkaTemplate;
 

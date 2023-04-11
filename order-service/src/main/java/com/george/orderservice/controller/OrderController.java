@@ -1,5 +1,6 @@
 package com.george.orderservice.controller;
 
+import com.george.orderservice.dto.CartDto;
 import com.george.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,7 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public String placeOrder(@RequestBody String userId){
-        return orderService.placeOrder(userId);
+    public String placeOrder(@RequestBody CartDto cartDto){
+        return orderService.placeOrder(cartDto);
     }
 }

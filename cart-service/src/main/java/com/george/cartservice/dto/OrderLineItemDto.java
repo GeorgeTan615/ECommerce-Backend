@@ -1,4 +1,5 @@
-package com.george.orderservice.dto;
+package com.george.cartservice.dto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

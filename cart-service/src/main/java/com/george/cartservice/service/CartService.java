@@ -1,8 +1,6 @@
 package com.george.cartservice.service;
 
-import com.george.cartservice.dto.CartResponse;
-import com.george.cartservice.dto.OrderLineItemRequest;
-import com.george.cartservice.dto.OrderLineItemResponse;
+import com.george.cartservice.dto.*;
 import com.george.cartservice.exception.CartNotFoundException;
 import com.george.cartservice.model.Cart;
 import com.george.cartservice.model.OrderLineItem;
@@ -137,10 +135,15 @@ public class CartService {
 
     public String checkOut(String userId) {
         try{
+            Cart cart = cartRepository.findByUserId(userId).orElseThrow(()->new CartNotFoundException(userId));
+            CartDto cartDto = mapToCartDto(cart);
+            if (cartDto.getOrderLineItemDtoList().size()==0){
+                throw new Exception("Empty cart can't be checked out");
+            }
             webClientBuilder.build()
                     .post()
                     .uri("http://order-service/api/orders")
-                    .bodyValue(userId)
+                    .bodyValue(cartDto)
                     .retrieve()
                     .bodyToMono(String.class)
                     .subscribe(result -> {
@@ -153,5 +156,19 @@ public class CartService {
             return e.getMessage();
         }
 
+    }
+    private CartDto mapToCartDto(Cart cart){
+        CartDto cartDto = CartDto.builder().id(cart.getId()).userId(cart.getUserId()).build();
+        List<OrderLineItemDto> orderLineItemDtoList = cart.getOrderLineItemList().stream().map(this::mapToOrderLineItemDto).toList();
+        cartDto.setOrderLineItemDtoList(orderLineItemDtoList);
+        return cartDto;
+    }
+    private OrderLineItemDto mapToOrderLineItemDto(OrderLineItem orderLineItem) {
+        return OrderLineItemDto.builder()
+                .id(orderLineItem.getId())
+                .productId(orderLineItem.getProductId())
+                .price(orderLineItem.getPrice())
+                .quantity(orderLineItem.getQuantity())
+                .build();
     }
 }
